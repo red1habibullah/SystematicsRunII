@@ -48,8 +48,8 @@ for i,fileKey in enumerate(fileDir1):
     pad1.SetFillColor(0)
     pad1.SetFillStyle(4000)
     pad1.SetFrameFillStyle(0)
-     pad1.Draw()
-      # ==============================================================
+    pad1.Draw()
+    # ==============================================================
 
     legend = ROOT.TLegend(0.60,0.78,0.95,0.95);
     legend.SetFillColor(0);

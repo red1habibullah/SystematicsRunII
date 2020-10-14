@@ -8,10 +8,10 @@ tdrStyle.setTDRStyle()
 ROOT.gStyle.SetErrorX(0.5)
 ROOT.gROOT.SetBatch()
 
-fileDir1 = ["../data/TauMuTauHad/InvertedMu2Iso_DM0/", "../data/TauMuTauHad/InvertedMu2Iso_DM1/", "../data/TauMuTauHad/InvertedMu2Iso_DM5/", "../data/TauMuTauHad/InvertedMu2Iso_DM6/", "../data/TauMuTauHad/InvertedMu2Iso_DM10/", "../data/TauMuTauHad/InvertedMu2Iso_DM11/"]
-fileDir2 = ["../data/TauMuTauHad/InvertedMu2Iso_InvertedTauIso_DM0/", "../data/TauMuTauHad/InvertedMu2Iso_InvertedTauIso_DM1/", "../data/TauMuTauHad/InvertedMu2Iso_InvertedTauIso_DM5/", "../data/TauMuTauHad/InvertedMu2Iso_InvertedTauIso_DM6/", "../data/TauMuTauHad/InvertedMu2Iso_InvertedTauIso_DM10/", "../data/TauMuTauHad/InvertedMu2Iso_InvertedTauIso_DM11/",]
+fileDir1 = ["../data/TauETauHad/InvertedMu2Iso_DM0/", "../data/TauETauHad/InvertedMu2Iso_DM1/", "../data/TauETauHad/InvertedMu2Iso_DM5/", "../data/TauETauHad/InvertedMu2Iso_DM6/", "../data/TauETauHad/InvertedMu2Iso_DM10/", "../data/TauETauHad/InvertedMu2Iso_DM11/"]
+fileDir2 = ["../data/TauETauHad/InvertedMu2Iso_InvertedTauIso_DM0/", "../data/TauETauHad/InvertedMu2Iso_InvertedTauIso_DM1/", "../data/TauETauHad/InvertedMu2Iso_InvertedTauIso_DM5/", "../data/TauETauHad/InvertedMu2Iso_InvertedTauIso_DM6/", "../data/TauETauHad/InvertedMu2Iso_InvertedTauIso_DM10/", "../data/TauETauHad/InvertedMu2Iso_InvertedTauIso_DM11/",]
 
-fakeEffFile = ROOT.TFile("../data/fakeTauEff_TauMuTauHad.root")
+fakeEffFile = ROOT.TFile("../data/fakeTauEff_TauETauHad.root")
 
 label = ["1 prong", "1 prong + #pi^{0}", "2 prongs", "2 prongs + #pi^{0}", "3 prongs", "3 prongs + #pi^{0}"]
 fakeEffHist = ["decayMode0", "decayMode1", "decayMode5", "decayMode6", "decayMode10", "decayMode11"]
@@ -55,7 +55,7 @@ globals()['Datadriven']=ROOT.TH1D("Datadriven","Datadriven",12,0,12)
 
     
 for i,fileKey in enumerate(fileDir1):
-    
+    print fileKey
     globals()["dataFile1" + fileKey] = ROOT.TFile(fileDir1[i] + "data.root")
     globals()["dataFile2" + fileKey] = ROOT.TFile(fileDir2[i] + "data.root")
 
@@ -79,8 +79,9 @@ for i,fileKey in enumerate(fileDir1):
                 
         binContentD = globals()["dataHist2" + fileKey].GetBinContent(ibin+1)
         fakeEffContent = globals()["fakeEffHist" + fileKey].GetBinContent(ibin+1)
+        if fakeEffContent==1:
+            continue
         product = (fakeEffContent/(1 - fakeEffContent))*binContentD
-
         try:
             errorD = globals()["dataHist2" + fileKey].GetBinError(ibin+1)/binContentD
         except:
@@ -137,7 +138,7 @@ for i,fileKey in enumerate(fileDir1):
     globals()["Datadriven"].SetLineWidth(3)
     
 pad1.cd()
-globals()["Observed" ].GetYaxis().SetRangeUser(0, 600)  
+globals()["Observed" ].GetYaxis().SetRangeUser(0, 200)  
 
 legend.AddEntry(globals()["Observed"], "Observed", "elp")
 legend.AddEntry(globals()["Datadriven"], "Datadriven", "elp")
@@ -153,5 +154,5 @@ legend.Draw("same")
 ROOT.gPad.Update()
 ROOT.gPad.RedrawAxis()
 
-canvas.SaveAs("../data/plots_sidebandValidation/" + histKey + "tmth_fakerateUncertainty_combine" + ".png")  
+canvas.SaveAs("../data/plots_sidebandValidation/" + histKey + "teth_fakerateUncertainty_combine" + ".png")  
     
