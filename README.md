@@ -19,7 +19,7 @@ $ scram b clean
 
 $ scram b -j4
 
-#Running the Scripts
+# Running the Scripts
 
 To get fakerate uncertainty on different decaymodes run:
 
