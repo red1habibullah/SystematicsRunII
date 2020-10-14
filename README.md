@@ -13,7 +13,7 @@ $ cmsenv
 
 $ git cms-init
 
-$ git clone https://github.com/red1habibullah/MuMuTauTauAnalyzer.git
+$ git clone https://github.com/red1habibullah/SystematicsRunII.git
 
 $ scram b clean
 
