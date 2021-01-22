@@ -15,8 +15,8 @@ ROOT.gROOT.SetBatch()
 
 #baseDir='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/TauMuTauHad/'  
 #baseDir='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/TauETauHad/'
-baseDirMVA='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/MVATauID/TauETauHad/'
-#baseDirMVA='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/MVATauID/TauMuTauHad/'   
+#baseDirMVA='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/MVATauID/TauETauHad/'
+baseDirMVA='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/MVATauID/TauMuTauHad/'   
 #baseDirMVA='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/MVATauID/TauMuTauHad/NobVeto/'
 #fileDir1 = ["InvertedMu2Iso_DM0/", "InvertedMu2Iso_DM1/", "InvertedMu2Iso_DM5/", "InvertedMu2Iso_DM6/", "InvertedMu2Iso_DM10/", "InvertedMu2Iso_DM11/"]
 #fileDir2 = ["InvertedMu2Iso_InvertedTauIso_DM0/", "InvertedMu2Iso_InvertedTauIso_DM1/", "InvertedMu2Iso_InvertedTauIso_DM5/", "InvertedMu2Iso_InvertedTauIso_DM6/", "InvertedMu2Iso_InvertedTauIso_DM10/", "InvertedMu2Iso_InvertedTauIso_DM11/",]
@@ -25,19 +25,19 @@ baseDirMVA='/eos/uscms/store/user/zfwd666/2017/fakeTauValidation/MVATauID/TauETa
 #fileDir2 = ["InvertedMu2Iso_InvertedTauIso_DM0/", "InvertedMu2Iso_InvertedTauIso_DM1/", "InvertedMu2Iso_InvertedTauIso_DM5/","InvertedMu2Iso_InvertedTauIso_DM6/", "InvertedMu2Iso_InvertedTauIso_DM11/"] 
 
 
-fileDir1MVA = ["InvertedMu2Iso_DM0/", "InvertedMu2Iso_DM1/"]
-fileDir2MVA = ["InvertedMu2Iso_InvertedTauIso_DM0/", "InvertedMu2Iso_InvertedTauIso_DM1/"]
+fileDir1MVA = ["InvertedMu2Iso_DM0/", "InvertedMu2Iso_DM1/","InvertedMu2Iso_DM10/"]
+fileDir2MVA = ["InvertedMu2Iso_InvertedTauIso_DM0/", "InvertedMu2Iso_InvertedTauIso_DM1/","InvertedMu2Iso_InvertedTauIso_DM10/"]
 
 
 
-fakeEffFile = ROOT.TFile("../data/fakeTauEff_TauETauHad_MVATauID_WithAdjacentEle.root")
+fakeEffFile = ROOT.TFile("../data/fakeTauEff_TauMuTauHad_AdjMu_MVA.root")
 #fakeTauEff_TauETauHad_DeepTauID_WithoutAdjacentEle.root 
 #fakeTauEff_TauETauHad_MVATauID_WithoutAdjacentEle.root
 label = ["1 prong", "1 prong + #pi^{0}", "2 prongs", "2 prongs + #pi^{0}", "3 prongs", "3 prongs + #pi^{0}"]
 #fakeEffHist = ["decayMode0", "decayMode1", "decayMode5", "decayMode6", "decayMode10", "decayMode11"]
 #fakeEffHist = ["decayMode0", "decayMode1", "decayMode5", "decayMode6", "decayMode11"]  
 
-fakeEffHistMVA=["decayMode0", "decayMode1"]
+fakeEffHistMVA=["decayMode0", "decayMode1","decayMode10"]
 
 histKey = "tauPt"
 
@@ -72,9 +72,9 @@ pad1.SetFrameFillStyle(0)
 pad1.Draw()
     
 #legend = ROOT.TLegend(0.60,0.78,0.95,0.95);
-legend = ROOT.TLegend(0.50,0.78,0.80,0.95);
-legend.SetFillColor(0);
-legend.SetTextSize(0.015);
+#legend = ROOT.TLegend(0.50,0.78,0.80,0.95);
+#legend.SetFillColor(0);
+#legend.SetTextSize(0.015);
 # ==============================================================
 globals()['Observed']=ROOT.TH1D("Observed","Observed",12,0,12)
 globals()['Datadriven']=ROOT.TH1D("Datadriven","Datadriven",12,0,12)
@@ -91,10 +91,12 @@ for i,fileKey in enumerate(fileDir1MVA):
 
     
     globals()["dataHist1" + fileKey] = globals()["dataFile1" + fileKey].Get(histKey)
+    print "1"
     globals()["dataHist1" + fileKey].Sumw2()
     globals()["dataHist1" + fileKey].SetStats(0)
 
     globals()["dataHist2" + fileKey] = globals()["dataFile2" + fileKey].Get(histKey)
+    print "2"
     globals()["dataHist2" + fileKey].Sumw2()
     globals()["dataHist2" + fileKey].SetStats(0)
 
@@ -153,14 +155,19 @@ for i,fileKey in enumerate(fileDir1MVA):
     error_D=globals()["DatadrivenD" + fileKey].GetBinError(1)
     globals()["DatadrivenD" + fileKey].SetBinError(1,error_D)
     
-   
+     
+    combined_error= perc_diff*(math.sqrt(pow(error_D/Integral_D,2) +pow(error_C/Integral_C,2)))
+    print "% diff " + str(combined_error)
+
     globals()['Percentage'].SetBinContent(int(fakeEffHistMVA[i].split('e')[-1])+1,perc_diff)
+    globals()['Percentage'].SetBinError(int(fakeEffHistMVA[i].split('e')[-1])+1,combined_error)
+                               
     #globals()['Percentage'].SetBinContent(int(fakeEffHist[i].split('e')[-1])+1,perc_diff) 
     globals()['Percentage'].GetXaxis().SetNdivisions(12)
     globals()['Percentage'].GetXaxis().SetTitle("#tau_{h} Decay Mode")
     globals()['Percentage'].GetYaxis().SetTitle("Percentage Difference (%)")
 
-      
+    
     globals()['Datadriven'].SetBinContent(int(fakeEffHistMVA[i].split('e')[-1])+1,Integral_D)
     #globals()['Datadriven'].SetBinContent(int(fakeEffHist[i].split('e')[-1])+1,Integral_D) 
     
@@ -175,13 +182,13 @@ for i,fileKey in enumerate(fileDir1MVA):
     globals()["Percentage"].GetXaxis().SetTitleSize(0.03)
     globals()["Percentage"].GetXaxis().SetLabelSize(0.02)
     globals()["Percentage"].GetYaxis().SetLabelSize(0.02)
-
     
 pad1.cd()
+globals()["Percentage"].Fit("pol0")
 globals()["Percentage" ].GetYaxis().SetRangeUser(0, 100)  
 
 #legend.AddEntry(globals()["Observed"], "Observed", "elp")
-legend.AddEntry(globals()["Percentage"], " #splitline{Percentage Difference between}{observed and datadriven}", "elp")
+#legend.AddEntry(globals()["Percentage"], " #splitline{Percentage Difference between}{observed and datadriven}", "elp")
 
 globals()["Percentage"].Draw("elp TEXT0 SAME") 
 #globals()["Datadriven"].Draw("elp same")
@@ -189,10 +196,10 @@ globals()["Percentage"].Draw("elp TEXT0 SAME")
 label1.Draw("same")
 label2.Draw("same")
 label3.Draw("same")
-legend.Draw("same")
+#legend.Draw("same")
 
 ROOT.gPad.Update()
 ROOT.gPad.RedrawAxis()
 
-canvas.SaveAs("../data/plots_sidebandValidation/" + histKey + "teth_fakerateUncertainty_combine_percentage_New_AdjEle_MVA" + ".png")  
+canvas.SaveAs("../data/plots_sidebandValidation/" + histKey + "tmth_fakerateUncertainty_combine_percentage_New_AdjMu_MVA_fit" + ".png")  
     
